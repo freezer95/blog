@@ -1,4 +1,9 @@
-# 排序
+---
+title: 排序算法
+date: 2019-06-20 10:00:00
+tags: algorithm
+description: 冒泡排序，快速排序
+---
 
 ### 冒泡排序
 

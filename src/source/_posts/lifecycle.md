@@ -1,12 +1,11 @@
-# Vue 源码分析
+---
+title: Vue(v2.6.10) - 生命周期
+date: 2019-06-21 10:00:00
+tags: vue
+description: beforeCreate, created, beforeMount, mounted, beforeUpdate, updated, beforeDestroy, destroyed
+---
 
-分析 Vue.js(v2.6.10) 核心代码，分为以下三部分：
-
-### 生命周期
-
-Vue 的生命周期包含 **beforeCreate, created, beforeMount, mounted, beforeUpdate, updated, beforeDestroy, destroyed**
-
-- beforeCreate & created
+### beforeCreate & created
 
 ```javascript
 // Vue 构造函数，通过 new 生成 Vue 实例时，调用 Vue.prototype.__init__
@@ -54,11 +53,11 @@ function Vue (options) {
   }
 ```
 
-- beforeMount
+### beforeMount
 
 编译 template 或 el 对应的 DOM 元素的 OuterHTML 为 AST，然后根据 AST 生成 vm.$option.render 函数，优化（检查 static 节点，static 子树）
 
-- mounted
+### mounted
 
 创建组件级wachter，执行 render 函数生成虚拟 Dom，执行 update 函数，通过 patch vnode 和 oldVnode 操作真实 DOM 节点
 
@@ -142,12 +141,8 @@ function mountComponent (vm, el, hydrating) {
   }
 ```
 
-- beforeUpdate & updated
+### beforeUpdate & updated
 
 检测到组件级wachter相关的数据变化，在 flushSchedulerQueue 中排序后遍历 queue 中的 watcher 执行 watcher.before() 和 watcher.run()。在执行 watcher.before() 中触发 beforeUpdate，在 watcher.run() 后触发 updated
 
-- beforeDestroy & destroyed
-
-### MVVM
-
-### 虚拟 DOM
+### beforeDestroy & destroyed
