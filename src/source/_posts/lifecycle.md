@@ -5,8 +5,24 @@ tags: vue
 description: beforeCreate, created, beforeMount, mounted, beforeUpdate, updated, beforeDestroy, destroyed
 ---
 
-### beforeCreate & created
+## 背景
+Vue 作为当前热门的框架之一，主要难点分为三大部分：模板编译、MVVM、虚拟DOM。而生命周期作为实例从创建到销毁全过程暴露的钩子，既为用户提供了在不同阶段注入代码的机会，也提供了了解整个框架源码的切入点。
+本篇文章，以生命周期为入口，旨在帮助大家抓住 Vue 框架运行的主线，会涉及到三大部分（模板编译、MVVM、虚拟DOM）的概念，但不会做更深入的说明。如有兴趣，可自行阅读其他资料或源码。
 
+## 图示
+主要的生命周期钩子可分为四类，每类有开始前（beforeXx） 和 已完成（过去式）两个钩子：
+|  类别   | 钩子（开始前）  | 钩子（已完成）  |
+|  ----  | ----  | ----  |
+| 创建  | beforeCreate | created |
+| 挂载  | beforeMount | mounted |
+| 更新  | beforeUpdate | updated |
+| 销毁  | beforeDestroy | destroyed |
+接下来通过 [Vue 官网生命周期图示](https://cn.vuejs.org/v2/guide/instance.html#生命周期图示)，了解生命周期钩子的含义及模糊逻辑。
+
+## 源码解析
+通过图示对生命周期有所了解后，下面从源码层面初步了解生命周期钩子的具体逻辑
+
+#### beforeCreate & created
 ```javascript
 // Vue 构造函数，通过 new 生成 Vue 实例时，调用 Vue.prototype.__init__
 function Vue (options) {
@@ -53,12 +69,10 @@ function Vue (options) {
   }
 ```
 
-### beforeMount
-
+#### beforeMount
 编译 template 或 el 对应的 DOM 元素的 OuterHTML 为 AST，然后根据 AST 生成 vm.$option.render 函数，优化（检查 static 节点，static 子树）
 
-### mounted
-
+#### mounted
 创建组件级wachter，执行 render 函数生成虚拟 Dom，执行 update 函数，通过 patch vnode 和 oldVnode 操作真实 DOM 节点
 
 ```javascript
@@ -141,8 +155,7 @@ function mountComponent (vm, el, hydrating) {
   }
 ```
 
-### beforeUpdate & updated
-
+#### beforeUpdate & updated
 检测到组件级wachter相关的数据变化，在 flushSchedulerQueue 中排序后遍历 queue 中的 watcher 执行 watcher.before() 和 watcher.run()。在执行 watcher.before() 中触发 beforeUpdate，在 watcher.run() 执行完毕后触发 updated
 
 ```javascript
@@ -216,8 +229,8 @@ function callUpdatedHooks (queue) {
   }
 }
 ```
-### beforeDestroy & destroyed
 
+#### beforeDestroy & destroyed
 在检测到数据变化后，执行watcher.run()的过程中，会执行watcher.get()，执行实例化wacher时传入的expOrFn。实例化 watcher的代码如下：
 ```javascript
     var updateComponent = function () {
@@ -279,3 +292,17 @@ Vue.prototype.$destroy = function () {
   }
 }
 ```
+**注：重点**
+```javascript
+var updateComponent = function () { // 连接数据更新和 Dom 更新
+  vm._update(vm._render(), hydrating);
+};
+```
+## 示例
+初步了解钩子的逻辑后，接下来借助 devtools 调试 Vue ( v2.6.10 ) 源码，进一步了解 Vue 实例不同阶段的具体逻辑。调试的 demo 地址详见[示例代码地址](https://github.com/freezer95/vue_code_analysis_demo)。
+
+## 总结
+至此，以生命周期钩子为切入点，初步介绍了 Vue 框架 Core 的运行机制。如果将 Vue 框架 Core 比喻为一栋楼，生命周期的钩子就是不同楼层的标志，三大部分（模板编译、MVVM、虚拟DOM）就是几批分布在不同楼层的多个房间，暴露出来的 API 就是房间的门窗。愿每一位开发者都能透过门窗，面朝源码，拥抱 Bug。
+
+## 扩展
+推荐书籍：《深入浅出 Vue.js》刘博文 著
